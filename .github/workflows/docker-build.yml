@@ -1,4 +1,5 @@
 name: Docker build
+run-name: Build Docker image for ${{ github.ref_name }}
 
 on:
   push:
