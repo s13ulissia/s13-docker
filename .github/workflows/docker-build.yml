@@ -39,9 +39,27 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and publish image
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Show published image
+        env:
+          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+          IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          {
+            printf '### Published Docker image\n\n'
+            while IFS= read -r tag; do
+              [ -z "$tag" ] || printf -- '- `%s`\n' "$tag"
+            done <<< "$IMAGE_TAGS"
+            printf '\n**Digest:** `%s`\n\n' "$IMAGE_DIGEST"
+            printf 'Pull with:\n\n```bash\n'
+            printf 'docker pull %s\n' "${IMAGE_TAGS%%$'\n'*}"
+            printf '```\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+          printf 'Published Docker image:\n%s\nDigest: %s\n' "$IMAGE_TAGS" "$IMAGE_DIGEST"
