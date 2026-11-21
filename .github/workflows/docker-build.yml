@@ -1,0 +1,21 @@
+name: Docker build
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout commit
+        uses: actions/checkout@v4
+
+      - name: Verify Docker is available
+        run: docker version
+
+      - name: Build Docker image
+        run: docker build --pull --tag "s13-training-camps:${{ github.sha }}" .
