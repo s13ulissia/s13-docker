@@ -50,4 +50,12 @@ Use `docker volume rm s13-training-camps-data` only when you intentionally want 
 
 ## Continuous integration
 
-`.github/workflows/docker-build.yml` uses GitHub's `ubuntu-latest` hosted runner to build the root `Dockerfile` on every branch push. It can also be started manually from the Actions tab. This runs for commits after they are pushed; it builds the image in the runner but does not publish it to a container registry. No repository secrets are required.
+`.github/workflows/docker-build.yml` uses GitHub's `ubuntu-latest` hosted runner to build and publish the root `Dockerfile` to GitHub Container Registry on every branch push. It can also be started manually from the Actions tab. Images are tagged with the commit SHA, and the default branch also updates `latest`. The workflow uses the automatically provided `GITHUB_TOKEN`; no repository secrets are required.
+
+Pull the latest image with:
+
+```bash
+docker pull ghcr.io/s13ulissia/s13-docker:latest
+```
+
+GitHub packages may be private by default. If so, sign in to `ghcr.io` with a GitHub token that has `read:packages` permission, or change the package visibility in the repository's package settings.
